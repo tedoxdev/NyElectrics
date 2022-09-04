@@ -1,7 +1,7 @@
 # NyElectrics
 Ny'Electrics Eco Mods
 
-> Compatible v8.3.3
+> Compatible v9.6.x
 
 Links to mod:
 

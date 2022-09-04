@@ -53,7 +53,7 @@ namespace NyElectrics
     [RequireComponent(typeof(PowerGridComponent))]
     [RequireComponent(typeof(PowerConsumptionComponent))]
     [RequireComponent(typeof(HousingComponent))]
-    [RequireComponent(typeof(SolidGroundComponent))]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent))]
     [RequireComponent(typeof(PluginModulesComponent))]
     [RequireComponent(typeof(RoomRequirementsComponent))]
     [RequireRoomContainment]
@@ -71,9 +71,9 @@ namespace NyElectrics
             this.GetComponent<MinimapComponent>().Initialize(Localizer.DoStr("Crafting"));
             this.GetComponent<PowerGridComponent>().Initialize(10, new ElectricPower());
             this.GetComponent<PowerConsumptionComponent>().Initialize(3000f);
-            this.GetComponent<HousingComponent>().HomeValue = NyElectricCementKilnItem.HomeValue;
+            this.GetComponent<HousingComponent>().HomeValue = NyElectricCementKilnItem.homeValue;
 
-            this.GetComponent<LiquidProducerComponent>().Setup(typeof(SmogItem), (int)(0.8 * 1000f), this.NamedOccupancyOffset("ChimneyOut"));
+            this.GetComponent<LiquidProducerComponent>().Setup(typeof(SmogItem), (int)(0.8 * 1000f), this.GetOccupancyType(BlockOccupancyType.ChimneyOut));
         }
 
         public override void Destroy()
@@ -83,7 +83,7 @@ namespace NyElectrics
 
         static NyElectricCementKilnObject()
         {
-            WorldObject.AddOccupancy<NyElectricCementKilnObject>(new List<BlockOccupancy>(){new BlockOccupancy(new Vector3i(0, 1, 0), typeof(PipeSlotBlock), new Quaternion(-0.7071068f, 0f, 0f, 0.7071068f), "ChimneyOut"),new BlockOccupancy(new Vector3i(0, 0, 0)),new BlockOccupancy(new Vector3i(1, 0, 0)),new BlockOccupancy(new Vector3i(1, 1, 0)), new BlockOccupancy(new Vector3i(2, 0, 0)),new BlockOccupancy(new Vector3i(2, 1, 0)),new BlockOccupancy(new Vector3i(3, 0, 0)),new BlockOccupancy(new Vector3i(3, 1, 0)),});
+            WorldObject.AddOccupancy<NyElectricCementKilnObject>(new List<BlockOccupancy>(){new BlockOccupancy(new Vector3i(0, 1, 0), typeof(PipeSlotBlock), new Quaternion(-0.7071068f, 0f, 0f, 0.7071068f), BlockOccupancyType.ChimneyOut),new BlockOccupancy(new Vector3i(0, 0, 0)),new BlockOccupancy(new Vector3i(1, 0, 0)),new BlockOccupancy(new Vector3i(1, 1, 0)), new BlockOccupancy(new Vector3i(2, 0, 0)),new BlockOccupancy(new Vector3i(2, 1, 0)),new BlockOccupancy(new Vector3i(3, 0, 0)),new BlockOccupancy(new Vector3i(3, 1, 0)),});
                 
             /* Linked Recipes */
             CraftingComponent.AddRecipe(typeof(NyElectricCementKilnObject), RecipeFamily.Get(typeof (ReinforcedConcreteRecipe)));
@@ -108,8 +108,10 @@ namespace NyElectrics
 
         }
 
-        [TooltipChildren] public HomeFurnishingValue HousingTooltip { get { return HomeValue; } }
-        public static readonly HomeFurnishingValue HomeValue = new HomeFurnishingValue()
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get;} = 0 | DirectionAxisFlags.Down;
+
+        public override HomeFurnishingValue HomeValue => homeValue;
+        public static readonly HomeFurnishingValue homeValue = new HomeFurnishingValue()
         {
             Category                 = RoomCategory.Industrial,
             TypeForRoomLimit         = Localizer.DoStr(""),
